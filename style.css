@@ -413,52 +413,58 @@ label, .css-1aw7j8u, .css-1i8mqq3, .css-1n5i18d {
     font-weight: 700;
 }
 
+.who-card-list {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+}
+.who-card {
+    background: rgba(6, 32, 50, 0.82);
+    border: 1px solid rgba(46, 184, 201, 0.18);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+.who-card-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.who-card-row:last-child {
+    margin-bottom: 0;
+}
+.who-card-label {
+    color: #a9d7f0;
+    font-size: 12px;
+    font-weight: 700;
+    width: 40%;
+}
+.who-card-value {
+    color: #eef8fb;
+    font-size: 14px;
+    width: 55%;
+}
+
 @media only screen and (max-width: 760px) {
-    .who-table-container {
-        overflow-x: hidden;
-    }
     .who-table {
-        min-width: 100%;
-        border: none;
+        display: none;
     }
-    .who-table thead,
-    .who-table tbody,
-    .who-table th,
-    .who-table td,
-    .who-table tr {
+    .who-card-list {
         display: block;
     }
-    .who-table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
+    .who-card-row {
+        display: grid;
+        grid-template-columns: minmax(100px, 35%) minmax(0, 65%);
+        gap: 10px;
+        align-items: start;
     }
-    .who-table tr {
-        margin: 0 0 16px 0;
-        border: 1px solid rgba(46, 184, 201, 0.18);
-        border-radius: 14px;
-        background: rgba(6, 32, 50, 0.72);
-        padding: 12px 0;
+    .who-card-label {
+        width: auto;
     }
-    .who-table td {
-        padding: 10px 16px 10px 50%;
-        text-align: left;
-        position: relative;
-        border: none;
-    }
-    .who-table td:before {
-        position: absolute;
-        top: 10px;
-        left: 16px;
-        width: 42%;
-        padding-right: 10px;
-        white-space: normal;
-        font-weight: 700;
-        color: #eef8fb;
-        content: attr(data-label);
-    }
-    .who-table td:last-child {
-        padding-bottom: 16px;
+    .who-card-value {
+        width: auto;
     }
 }
 
