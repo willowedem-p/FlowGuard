@@ -43,6 +43,10 @@ body {
     padding: 0;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 .block-container {
     padding-top: 2rem;
     max-width: 1400px;
@@ -619,4 +623,16 @@ html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], 
 .stFileUploader, .stRadio, .stCheckbox, .stSlider,
 .stMultiSelect, .stDateInput, .stTimeInput {
     width: 100% !important;
+}
+
+button, input, textarea, select {
+    min-width: 0 !important;
+}
+
+img, svg, video, iframe, table {
+    max-width: 100% !important;
+}
+
+html, body, .stApp, .block-container, [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottomBlockContainer"] {
+    min-width: 0 !important;
 }
