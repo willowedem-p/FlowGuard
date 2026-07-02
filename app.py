@@ -67,7 +67,8 @@ def load_cleaned_dataset():
         raise ValueError("Dataset must contain a 'Label' column with Safe/Unsafe values.")
 
     df["Label"] = df["Label"].map({"Safe": 1, "Unsafe": 0})
-    df["Turbidity_NTU"] = df["Turbidity_NTU"].apply(lambda x: 1 if x >= 5 else 0)
+    # NOTE: Turbidity_NTU is kept as raw float — the notebook does NOT binarise it
+    # during training; binarisation only happens inside calculate_purity().
 
     safe = df[df["Label"] == 1]
     unsafe = df[df["Label"] == 0]
@@ -150,10 +151,29 @@ def ml_prediction(ph, tds, turbidity, temperature):
 
 
 def calculate_purity(ph, tds, turbidity, temperature):
-    ph_score = 100 if 6.5 <= ph <= 8.5 else max(0, 100 - abs(7.5 - ph) * 20)
-    tds_score = max(0, 100 - (tds / 500) * 100)
-    turb_score = max(0, 100 - (turbidity / 5) * 100)
-    temp_score = 100 if 20 <= temperature <= 30 else max(0, 100 - abs(25 - temperature) * 5)
+    # pH (WHO: 6.5–8.5)
+    if 6.5 <= ph <= 8.5:
+        ph_score = 100
+    else:
+        ph_score = max(0, 100 - abs(ph - 7.5) * 20)
+
+    # TDS: full score up to 500 mg/L, then degrades above 500
+    if tds <= 500:
+        tds_score = 100
+    else:
+        tds_score = max(0, 100 - ((tds - 500) / 500) * 100)
+
+    # Turbidity: binary — 0 NTU = clear (100), anything else = turbid (0)
+    if turbidity == 0:
+        turb_score = 100
+    else:
+        turb_score = 0
+
+    # Temperature (comfort/aesthetic, not a WHO health limit)
+    if 20 <= temperature <= 30:
+        temp_score = 100
+    else:
+        temp_score = max(0, 100 - abs(temperature - 25) * 5)
 
     purity = (
         0.30 * ph_score +
@@ -161,7 +181,7 @@ def calculate_purity(ph, tds, turbidity, temperature):
         0.30 * turb_score +
         0.10 * temp_score
     )
-    return purity
+    return round(purity, 2)
 
 
 def classify_water(purity):
@@ -496,11 +516,6 @@ def render_eda(ph, tds, turbidity, temperature, purity):
             f"<div class='who-card-list'>{card_rows}</div>",
             unsafe_allow_html=True,
         )
-
-        st.markdown("**WHO Compliance Summary**")
-        for row in rows:
-            ok = "OK" if row["Note"] == "Good" else "OUTSIDE"
-            st.markdown(f"- {row['Parameter']}: {row['Reading']} ({ok})")
 
 
 # ============================================================================
@@ -888,11 +903,14 @@ def render_new_test():
             ph = st.number_input("pH", min_value=0.0, max_value=14.0, value=7.0, step=0.01, format="%.2f")
             tds = st.number_input("TDS (ppm)", min_value=0.0, max_value=5000.0, value=150.0, step=0.1, format="%.1f")
         with col2:
-            turbidity = st.selectbox(
+            turbidity = st.number_input(
                 "Turbidity (NTU)",
-                options=[0, 1],
-                index=1,
-                help="Select 0 for clear water or 1 for turbid water.",
+                min_value=0.0,
+                max_value=200.0,
+                value=1.0,
+                step=0.01,
+                format="%.2f",
+                help="Raw turbidity reading from sensor. WHO limit: 5 NTU. Enter 0 for perfectly clear water.",
             )
             temperature = st.number_input("Temperature (°C)", min_value=-10.0, max_value=60.0, value=25.0, step=0.01, format="%.2f")
 
