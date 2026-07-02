@@ -760,7 +760,7 @@ def render_landing():
             <h3>Parameters Measured</h3>
             <table class="param-table">
                 <tr><td><b>pH</b></td><td>Acidity / alkalinity of water</td></tr>
-                <tr><td><b>TDS (ppm)</b></td><td>Total Dissolved Solids — dissolved salts/minerals</td></tr>
+                <tr><td><b>TDS (ppm)</b></td><td>Total Dissolved Solids — dissolved salts/minerals/metals</td></tr>
                 <tr><td><b>Turbidity (NTU)</b></td><td>Water clarity / cloudiness</td></tr>
                 <tr><td><b>Temperature (°C)</b></td><td>Water temperature</td></tr>
             </table>
@@ -774,8 +774,7 @@ def render_landing():
         <h3>Hardware &amp; Data Collection</h3>
         <p>Readings are designed to be collected from a low-cost Arduino-based sensor rig —
         a glass pH probe, an optical/IR turbidity sensor, a waterproof DS18B20 temperature
-        probe, and a TDS module — a sensor combination chosen for being affordable and
-        available locally in Ghana while still giving a reliable water-quality signal.
+        probe, and a TDS module — a sensor combination chosen for being comparitively much more available and accessible in Ghana, while still giving a reliable water-quality signal.
         These four readings feed directly into the assessment engine below.</p>
     </div>
     """, unsafe_allow_html=True)
