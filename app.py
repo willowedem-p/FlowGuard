@@ -480,10 +480,20 @@ def render_eda(ph, tds, turbidity, temperature, purity):
             for r in rows
         )
 
+        card_rows = "".join(
+            f"<div class='who-card'><div class='who-card-row'><span class='who-card-label'>Parameter</span><span class='who-card-value'>{r['Parameter']}</span></div>"
+            f"<div class='who-card-row'><span class='who-card-label'>Reading</span><span class='who-card-value'>{r['Reading']:g}</span></div>"
+            f"<div class='who-card-row'><span class='who-card-label'>WHO Range</span><span class='who-card-value'>{r['WHO Range']}</span></div>"
+            f"<div class='who-card-row'><span class='who-card-label'>Status</span><span class='who-card-value'><span class='badge {r['Badge']}'>{r['Status']}</span></span></div>"
+            f"<div class='who-card-row'><span class='who-card-label'>Note</span><span class='who-card-value'>{r['Note']}</span></div></div>"
+            for r in rows
+        )
+
         st.markdown(
             "<div class='who-table-container'><table class='who-table'><thead><tr><th>Parameter</th><th>Reading</th>"
             "<th>WHO Range</th><th>Status</th><th>Note</th></tr></thead>"
-            f"<tbody>{table_rows}</tbody></table></div>",
+            f"<tbody>{table_rows}</tbody></table></div>"
+            f"<div class='who-card-list'>{card_rows}</div>",
             unsafe_allow_html=True,
         )
 
