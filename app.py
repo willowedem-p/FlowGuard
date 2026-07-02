@@ -1079,7 +1079,9 @@ def render_print_button(dt_str, ph, tds, turbidity, temperature, ml_prob, purity
     table.who-table tr:nth-child(even) {{ background: rgba(46, 184, 201, 0.05); }}
     .footer {{ margin-top: 34px; color: #6b7c8e; font-size: 13px; text-align: center; }}
     .print-button {{ display:inline-flex; align-items:center; gap:10px; margin-top:20px; padding:12px 22px; background: linear-gradient(135deg, #10638a, #2eb8c9); color:#fff; border-radius:12px; text-decoration:none; cursor:pointer; border:none; font-size:14px; font-weight:700; box-shadow:0 18px 30px rgba(16,99,138,0.2); }}
-    .print-button:hover {{ opacity: 0.96; }}
+    .print-button.print-close {{ background: linear-gradient(135deg, #4b5563, #1f2a38); }}
+    .report-actions {{ display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }}
+    .report-note {{ margin-top:14px; color:#4a6374; font-size:13px; line-height:1.6; }}
     .section-divider {{ height: 1px; width: 100%; margin: 30px 0; background: linear-gradient(90deg, transparent, #a7d9f2, transparent); }}
     @media print {{ .print-button {{ display:none; }} body {{ background: #fff; }} .container {{ box-shadow:none; }} }}
     </style>
@@ -1158,13 +1160,16 @@ def render_print_button(dt_str, ph, tds, turbidity, temperature, ml_prob, purity
             </table>
         </div>
 
-        <button class="print-button" onclick="window.print();">Print this report</button>
+        <div class="report-actions">
+            <button class="print-button" onclick="window.print();">Print this report</button>
+            <button class="print-button print-close" onclick="window.close();">Close report</button>
+        </div>
+        <p class="report-note">After printing, close this tab to return to the app. If the print dialog does not appear immediately, use the browser's print action.</p>
         <div class="footer">Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
     </div>
     </body>
     </html>
     """
-
     render_print_window_button("🖨️ Open Printable Report", f"print_btn_{dt_str}", print_html)
 
 
@@ -1194,6 +1199,7 @@ def render_print_window_button(label: str, unique_key: str, html_content: str):
             reportWindow.document.open();
             reportWindow.document.write(`{escaped_html}`);
             reportWindow.document.close();
+            reportWindow.focus();
         }});
         </script>
     """, height=60)
@@ -1218,6 +1224,9 @@ th { background: #f4fbff; color: #023e58; }
 .footer { margin-top: 32px; color: #6b7c8e; font-size: 13px; }
 .print-button { display:inline-block;margin-top:20px;padding:12px 20px;background:#10638a;color:#fff;border-radius:10px;text-decoration:none;cursor:pointer; border:none; font-size:14px; }
 @media print { .print-button { display:none; } body { background: #fff; } .container { box-shadow:none; } }
+.report-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+.print-close { background: linear-gradient(135deg, #4b5563, #1f2a38); }
+.report-note { margin-top:14px; color:#4a6374; font-size:13px; line-height:1.6; }
 """
 
 
@@ -1242,7 +1251,11 @@ def build_history_print_html(df: pd.DataFrame) -> str:
                 <th>Temp (°C)</th><th>WQI Class</th><th>Purity</th><th>Final Decision</th></tr>
             {rows_html}
         </table>
-        <button class="print-button" onclick="window.print();">Print this report</button>
+        <div class="report-actions">
+            <button class="print-button" onclick="window.print();">Print this report</button>
+            <button class="print-button print-close" onclick="window.close();">Close report</button>
+        </div>
+        <p class="report-note">After printing, close this tab to return to the app. If the print dialog does not appear immediately, use the browser's print action.</p>
         <div class="footer">Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
     </div></body></html>
     """
@@ -1273,7 +1286,11 @@ def build_recommendations_print_html(df: pd.DataFrame) -> str:
         <h1 class="heading">💊 FlowGuard — Treatment Recommendations Report</h1>
         <p class="subheading">Recommended treatment plans for all {len(df)} test(s) on record.</p>
         {records_html}
-        <button class="print-button" onclick="window.print();">Print this report</button>
+        <div class="report-actions">
+            <button class="print-button" onclick="window.print();">Print this report</button>
+            <button class="print-button print-close" onclick="window.close();">Close report</button>
+        </div>
+        <p class="report-note">After printing, close this tab to return to the app. If the print dialog does not appear immediately, use the browser's print action.</p>
         <div class="footer">Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
     </div></body></html>
     """
