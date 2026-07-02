@@ -472,16 +472,18 @@ def render_eda(ph, tds, turbidity, temperature, purity):
             })
 
         table_rows = "".join(
-            f"<tr><td>{r['Parameter']}</td><td>{r['Reading']:g}</td><td>{r['WHO Range']}</td>"
-            f"<td><span class='badge {r['Badge']}'>{r['Status']}</span></td>"
-            f"<td>{r['Note']}</td></tr>"
+            f"<tr><td data-label='Parameter'>{r['Parameter']}</td>"
+            f"<td data-label='Reading'>{r['Reading']:g}</td>"
+            f"<td data-label='WHO Range'>{r['WHO Range']}</td>"
+            f"<td data-label='Status'><span class='badge {r['Badge']}'>{r['Status']}</span></td>"
+            f"<td data-label='Note'>{r['Note']}</td></tr>"
             for r in rows
         )
 
         st.markdown(
-            "<table class='who-table'><thead><tr><th>Parameter</th><th>Reading</th>"
+            "<div class='who-table-container'><table class='who-table'><thead><tr><th>Parameter</th><th>Reading</th>"
             "<th>WHO Range</th><th>Status</th><th>Note</th></tr></thead>"
-            f"<tbody>{table_rows}</tbody></table>",
+            f"<tbody>{table_rows}</tbody></table></div>",
             unsafe_allow_html=True,
         )
 
@@ -711,10 +713,10 @@ def render_landing():
         st.markdown("""
         <div class="info-card">
             <div class="info-icon">🎯</div>
-            <h3>Our Goal</h3>
-            <p>Give individuals and communities a simple, affordable way to assess
-            water safety and receive clear, appropriate treatment recommendations —
-            without needing a laboratory.</p>
+            <h3>Our Purpose and Goals</h3>
+            <p>Provide awareness-building education about safe water, especially in
+            rural and underserved communities, and make reliable water quality testing
+            more accessible where lab services are limited.</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -731,10 +733,10 @@ def render_landing():
         st.markdown("""
         <div class="info-card">
             <div class="info-icon">🌍</div>
-            <h3>Our Purpose</h3>
-            <p>Supports SDG 3 (Good Health and Well-being) and SDG 6 (Clean Water
-            and Sanitation) by making water-safety assessment accessible and
-            data-driven for under-served communities.</p>
+            <h3>Our Impact</h3>
+            <p>Help communities living with limited resources protect health by enabling
+            practical on-site water assessment, reducing the need for distant testing
+            infrastructure and empowering safer water choices.</p>
         </div>
         """, unsafe_allow_html=True)
 
