@@ -13,6 +13,7 @@ html, body, [class*="css"] {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: #e4f4f8;
     background-color: #0a1f30; /* Fallback color while image loads */
+    overflow-x: hidden;
 }
 
 /* Ensure the Streamlit App container is fully transparent so the background shows through */
@@ -473,4 +474,149 @@ div[data-testid="stTable"] table tbody tr:nth-child(odd) {
 [data-testid="stAlert"] div,
 .stAlert p, .stAlert span, .stAlert div {
     color: #eef8fb !important;
+}
+
+/* ===== Responsive mobile layout ===== */
+@media only screen and (max-width: 900px) {
+    .block-container {
+        padding-top: 1.2rem;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+        max-width: none;
+    }
+
+    .hero {
+        padding: 30px 18px 24px 18px;
+    }
+    .hero-title {
+        font-size: 28px;
+    }
+    .hero-subtitle {
+        font-size: 15px;
+    }
+
+    .navbar {
+        padding: 14px 16px;
+    }
+
+    .stat-card,
+    .info-card,
+    .detail-card,
+    .result-card,
+    .widget-card,
+    .record-row {
+        padding: 16px !important;
+    }
+
+    .result-grid,
+    .result-grid.two-col {
+        grid-template-columns: 1fr !important;
+    }
+
+    .metric-box {
+        min-height: auto;
+    }
+
+    .stButton > button {
+        width: 100% !important;
+    }
+
+    .stSelectbox [role="button"],
+    .stNumberInput input,
+    .stTextInput input,
+    .stTextArea textarea,
+    select {
+        min-height: 50px !important;
+        padding: 10px 12px !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] button {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: 14px !important;
+    }
+
+    .who-table th,
+    .who-table td {
+        padding: 10px 12px !important;
+        font-size: 12px !important;
+    }
+
+    .record-main,
+    .result-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .record-sub,
+    .stat-label,
+    .result-date,
+    .widget-card p,
+    .widget-card li,
+    .detail-card ol {
+        font-size: 13px !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .hero {
+        padding: 24px 14px 20px 14px;
+    }
+    .hero-title {
+        font-size: 24px;
+    }
+    .hero-subtitle {
+        font-size: 14px;
+    }
+
+    .section-divider {
+        margin: 18px 0;
+    }
+
+    .stTabs [data-baseweb="tab-list"] button {
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+    }
+
+    .stButton > button {
+        font-size: 15px !important;
+    }
+
+    .result-card,
+    .info-card,
+    .detail-card,
+    .widget-card {
+        border-radius: 16px;
+    }
+
+    .block-container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+/* Prevent horizontal overflow on portrait phones */
+html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottomBlockContainer"] {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+}
+
+.block-container {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Ensure flex children shrink properly instead of forcing overflow */
+.record-main, .result-header, .stTabs [data-baseweb="tab-list"] button, .stAlert, .stTable, .stDataFrame {
+    min-width: 0 !important;
+}
+
+/* Make wide form widgets fit mobile width */
+.stSelectbox, .stNumberInput, .stTextInput, .stTextArea,
+.stFileUploader, .stRadio, .stCheckbox, .stSlider,
+.stMultiSelect, .stDateInput, .stTimeInput {
+    width: 100% !important;
 }
