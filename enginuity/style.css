@@ -1,0 +1,880 @@
+/* =====================================================
+   AquaSafe Monitor — Watercolor Ocean Theme
+   Palette sampled from reference image:
+   deep navy #0a1f30 -> teal #10638a -> bright cyan-teal #2eb8c9
+   Background recreated with layered CSS gradients + grain
+   (the source image itself is a watermarked stock photo,
+   so it is not embedded directly — this recreates the look)
+   ===================================================== */
+
+/* ===== Global background: layered watercolor-style gradients ===== */
+/* ===== Global background: Updated to allow the injected image to take over ===== */
+html, body, [class*="css"] {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #e4f4f8;
+    background-color: #0a1f30; /* Fallback color while image loads */
+    overflow-x: hidden;
+}
+
+/* Ensure the Streamlit App container is fully transparent so the background shows through */
+.stApp {
+    background: transparent !important;
+}
+
+/* Streamlit wraps everything in its own app/view/header containers which
+   otherwise sit on top of the html/body gradient with their own default
+   white background. Force them transparent so the ocean gradient behind
+   shows through everywhere, with no white gaps top/bottom/sides. */
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stBottomBlockContainer"],
+.main {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+[data-testid="stHeader"] {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.block-container {
+    padding-top: 2rem;
+    max-width: 1400px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Base text colors ===== */
+.stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+.stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4,
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3,
+[data-testid="stMarkdownContainer"] h4 {
+    color: #ffffff !important;
+}
+
+.stApp p,
+.stMarkdown p,
+[data-testid="stMarkdownContainer"] p,
+.stApp li,
+[data-testid="stMarkdownContainer"] li {
+    color: #cfeaf2 !important;
+}
+
+/* ===== Hero / Front page ===== */
+.hero {
+    text-align: center;
+    padding: 56px 32px 40px 32px;
+    background: linear-gradient(135deg, rgba(10, 40, 62, 0.92) 0%, rgba(15, 90, 120, 0.88) 100%);
+    border-radius: 26px;
+    margin-bottom: 22px;
+    box-shadow: 0 28px 70px rgba(0, 4, 10, 0.55);
+    border: 1px solid rgba(46, 184, 201, 0.25);
+    backdrop-filter: blur(2px);
+}
+.hero, .hero *,
+.hero h1, .hero h1 *,
+.hero p, .hero p *,
+.hero span, .hero span *,
+.hero div, .hero div *,
+.hero-title, .hero-title * {
+    color: #ffffff !important;
+}
+.hero-icon { font-size: 58px; animation: float 6s ease-in-out infinite; }
+.hero-title {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 10px 0;
+    line-height: 1.2;
+    text-shadow: 0 3px 18px rgba(0, 0, 0, 0.5);
+}
+.hero-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.88) !important;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* ===== Buttons ===== */
+button, .stButton > button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    background: linear-gradient(135deg, #10638a 0%, #2eb8c9 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(46, 184, 201, 0.35) !important;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px !important;
+    padding: 10px 18px;
+    height: 48px;
+    min-height: 48px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+button:hover, .stButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(46, 184, 201, 0.35);
+    background: linear-gradient(135deg, #16829f 0%, #3fd0e0 100%) !important;
+}
+.stButton > button:focus-visible {
+    outline: 2px solid rgba(46, 184, 201, 0.65);
+    outline-offset: 2px;
+}
+/* Streamlit button label wrapper: prevent internal wrapping that breaks the
+   uniform pill shape when one nav button's text is longer than another's */
+.stButton > button p {
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* ===== Cards ===== */
+.info-card, .detail-card, .result-card, .record-row, .stat-card, .metric-box, .widget-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+.info-card:hover,
+.detail-card:hover,
+.result-card:hover,
+.record-row:hover,
+.stat-card:hover,
+.metric-box:hover,
+.widget-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.info-card {
+    background: linear-gradient(180deg, rgba(9, 45, 68, 0.90), rgba(6, 32, 50, 0.94));
+    border: 1px solid rgba(46, 184, 201, 0.24);
+    border-radius: 18px;
+    padding: 24px 20px;
+    height: 100%;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.35);
+}
+.info-icon { font-size: 32px; margin-bottom: 8px; }
+.info-card h3 { margin: 6px 0; font-size: 19px; color: #ffffff !important; }
+.info-card p { font-size: 14px; line-height: 1.6; color: #cfeaf2 !important; }
+
+.detail-card {
+    background: linear-gradient(180deg, rgba(9, 45, 68, 0.90), rgba(6, 32, 50, 0.94));
+    border: 1px solid rgba(46, 184, 201, 0.22);
+    border-radius: 18px;
+    padding: 24px;
+    height: 100%;
+}
+.detail-card h3 { margin-top: 0; color: #ffffff !important; }
+.detail-card ol { padding-left: 20px; line-height: 1.75; color: #cfeaf2; }
+
+.param-table { width: 100%; border-collapse: collapse; background: rgba(6, 32, 50, 0.88); border: 1px solid rgba(46, 184, 201, 0.18); }
+.param-table th, .param-table td { padding: 10px 12px; border: 1px solid rgba(46, 184, 201, 0.14); font-size: 14px; vertical-align: top; }
+.param-table th { background: rgba(46, 184, 201, 0.18); color: #ffffff; font-weight: 700; }
+.param-table td { color: #cfeaf2; }
+.param-table tr:nth-child(even) { background: rgba(16, 99, 138, 0.22); }
+
+.section-divider { height: 1px; background: rgba(46, 184, 201, 0.26); margin: 28px 0; }
+.section-divider.thin { margin: 16px 0; }
+
+/* ===== Sidebar / Inputs ===== */
+section[data-testid="stSidebar"] {
+    background: rgba(4, 18, 30, 0.97) !important;
+    border: 1px solid rgba(46, 184, 201, 0.20) !important;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4) !important;
+}
+section[data-testid="stSidebar"] *,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] span {
+    color: #e4f4f8 !important;
+}
+
+/* ===== Form field cards (pH / TDS / Turbidity / Temperature, etc.) =====
+   Streamlit's DOM for a number input is:
+     .stNumberInput (outer wrapper)
+       label (field name text + "?" tooltip icon)
+       div[data-testid="stNumberInputContainer"] (value field + step buttons)
+   Style ONLY the outer wrapper as a single card, and make every nested
+   element transparent/borderless so there's no double-boxing or mismatched
+   corners between a label row and a value row. */
+
+.stTextInput, .stNumberInput, .stTextArea, .stSelectbox,
+.stMultiSelect, .stDateInput, .stTimeInput, .stFileUploader,
+.stRadio, .stCheckbox, .stSlider {
+    background: rgba(8, 41, 65, 0.95) !important;
+    border: 1px solid rgba(46, 184, 201, 0.24) !important;
+    border-radius: 14px !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box;
+}
+
+.stNumberInput label,
+.stTextInput label,
+.stTextArea label,
+.stSelectbox label {
+    margin-bottom: 6px !important;
+}
+
+/* Inner wrappers: transparent pass-through, no nested card look */
+.stNumberInput > div,
+.stTextInput > div,
+.stTextArea > div,
+.stSelectbox > div,
+.stSelectbox > div > div {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.stSelectbox [role="button"],
+.stNumberInput input,
+.stTextInput input,
+.stTextArea textarea,
+select {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: #eef8fb !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    padding: 4px 0 !important;
+    line-height: 1.4 !important;
+    box-sizing: border-box;
+}
+
+.stSelectbox [role="button"],
+.stNumberInput > div[data-testid="stNumberInputContainer"] {
+    display: flex !important;
+    align-items: center !important;
+}
+
+select option {
+    background: #082941 !important;
+    color: #eef8fb !important;
+}
+
+/* Help "?" tooltip icon: reset from the generic pill-button style down to a
+   small plain icon, otherwise it inherits the 48px teal pill-button style
+   and balloons into an oversized block next to the label. */
+[data-testid="stTooltipIcon"] button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    width: 22px !important;
+    min-width: 22px !important;
+    padding: 0 !important;
+    color: #7fb3c4 !important;
+}
+[data-testid="stTooltipIcon"] button:hover {
+    color: #2eb8c9 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Number input +/- step buttons: compact square buttons with a clearly
+   visible white icon (Streamlit's default icon fill is too dark to see
+   against our teal gradient), sized to match the input field's height. */
+[data-testid="stNumberInputStepUp"],
+[data-testid="stNumberInputStepDown"] {
+    background: linear-gradient(135deg, #10638a 0%, #2eb8c9 100%) !important;
+    border: 1px solid rgba(46, 184, 201, 0.45) !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+}
+[data-testid="stNumberInputStepUp"] svg,
+[data-testid="stNumberInputStepDown"] svg {
+    width: 16px !important;
+    height: 16px !important;
+    overflow: visible !important;
+}
+[data-testid="stNumberInputStepUp"] svg path,
+[data-testid="stNumberInputStepDown"] svg path,
+[data-testid="stNumberInputStepUp"] svg polyline,
+[data-testid="stNumberInputStepDown"] svg polyline,
+[data-testid="stNumberInputStepUp"] svg line,
+[data-testid="stNumberInputStepDown"] svg line {
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+    stroke-width: 2.5 !important;
+}
+
+label, .css-1aw7j8u, .css-1i8mqq3, .css-1n5i18d {
+    color: #e4f4f8 !important;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+    background: linear-gradient(135deg, #082941 0%, #10638a 45%, #2eb8c9 100%);
+    border: 1px solid rgba(46, 184, 201, 0.24);
+    border-radius: 22px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.4);
+}
+.navbar-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Stat cards ===== */
+.stat-card {
+    background: rgba(6, 32, 50, 0.92);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    border: 1px solid rgba(46, 184, 201, 0.20);
+}
+.stat-num { font-size: 30px; font-weight: 800; color: #4fd8ec; }
+.stat-label { font-size: 13px; color: #9fc9d9; margin-top: 4px; }
+.stat-safe { background: rgba(20, 90, 60, 0.35); border-color: rgba(46, 204, 113, 0.35); }
+.stat-safe .stat-num { color: #4be08a; }
+.stat-unsafe { background: rgba(110, 30, 26, 0.35); border-color: rgba(231, 76, 60, 0.35); }
+.stat-unsafe .stat-num { color: #ff6b5e; }
+.stat-uncertain { background: rgba(255, 251, 0, 0.824); border-color: rgb(241, 15, 15); }
+.stat-uncertain .stat-num { color: #ffcf4d; }
+
+/* ===== Record rows ===== */
+.record-row {
+    background: linear-gradient(180deg, rgba(9,45,68,0.92), rgba(6,32,50,0.85));
+    border: 1px solid rgba(46, 184, 201, 0.14);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+/* Previous Tests page: each row is a real st.container(key=...), which has
+   no background of its own by default — style it to match .record-row so
+   the watercolor page background doesn't show through behind the text. */
+div[class*="st-key-history_row_"] {
+    background: linear-gradient(180deg, rgba(9,45,68,0.96), rgba(6,32,50,0.92)) !important;
+    border: 1px solid rgba(46, 184, 201, 0.16) !important;
+    border-radius: 14px !important;
+    padding: 16px 20px !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45) !important;
+}
+div[class*="st-key-history_row_"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Card used for the history actions (Download CSV / Print) */
+.history-actions-card {
+    background: linear-gradient(180deg, rgba(6,32,50,0.88), rgba(6,32,50,0.75));
+    border: 1px solid rgba(46,184,201,0.12);
+    padding: 14px;
+    border-radius: 12px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+}
+.history-actions-card a, .history-actions-card button {
+    flex: 1 1 48%;
+    text-align: center;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    color: #fff !important;
+    text-decoration: none !important;
+    border: none !important;
+}
+.history-actions-card .download { background: linear-gradient(135deg,#10638a,#2eb8c9); }
+.history-actions-card .print { background: linear-gradient(135deg,#10638a,#2eb8c9); }
+
+
+@media only screen and (max-width: 700px) {
+    .history-actions-card { flex-direction: column; }
+    .history-actions-card a, .history-actions-card button { width: 100%; flex: none; }
+}
+.record-main { display: flex; justify-content: space-between; align-items: center; }
+.record-date { font-weight: 600; color: #ffffff; }
+.record-sub { color: #9fc9d9; font-size: 13px; margin-top: 6px; }
+
+/* ===== Badges ===== */
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.badge-lg { font-size: 14px; padding: 6px 16px; }
+.badge-safe { background: rgba(46, 204, 113, 0.18); color: #4be08a; border: 1px solid rgba(46, 204, 113, 0.35); }
+.badge-unsafe { background: rgba(231, 76, 60, 0.18); color: #ff6b5e; border: 1px solid rgba(231, 76, 60, 0.35); }
+.badge-uncertain { background: rgba(255, 247, 0, 0.18); color: #ffcf4d; border: 1px solid rgb(255, 106, 0); }
+
+/* ===== Result Card ===== */
+.result-card {
+    background: rgba(6, 32, 50, 0.93);
+    border: 1px solid rgba(46, 184, 201, 0.22);
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 14px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(46, 184, 201, 0.20);
+    margin-bottom: 18px;
+}
+.result-header h3 { margin: 0; color: #ffffff !important; }
+.result-date { color: #9fc9d9; font-size: 13px; margin-top: 6px; }
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+.result-grid.two-col { grid-template-columns: repeat(2, 1fr); }
+
+.metric-box {
+    background: rgba(16, 99, 138, 0.35);
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-align: left;
+    border: 1px solid rgba(46, 184, 201, 0.18);
+    border-left: 4px solid rgba(46, 184, 201, 0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.metric-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.metric-icon { font-size: 16px; line-height: 1; }
+.metric-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; color: #9fc9d9; }
+.metric-value { font-size: 20px; font-weight: 700; color: #ffffff !important; }
+.metric-badge { align-self: flex-start; }
+
+.metric-ph { border-left-color: #2eb8c9; }
+.metric-tds { border-left-color: #d9a441; }
+.metric-turbidity { border-left-color: #8fb8c4; }
+.metric-temp { border-left-color: #ff6b5e; }
+
+.widget-card {
+    background: rgba(6, 32, 50, 0.92);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(46, 184, 201, 0.18);
+    box-shadow: none;
+}
+.widget-card h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 18px;
+    color: #ffffff !important;
+}
+.widget-card p,
+.widget-card li {
+    line-height: 1.7;
+    color: #cfeaf2 !important;
+}
+
+.treatment-list { padding-left: 20px; line-height: 1.8; margin: 0; }
+.treatment-list li { margin-bottom: 8px; color: #cfeaf2; }
+
+/* ===== WHO table ===== */
+.who-table-container {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+.who-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.who-table th,
+.who-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(46, 184, 201, 0.16);
+    text-align: left;
+    color: #cfeaf2;
+    white-space: normal;
+    word-break: break-word;
+}
+.who-table thead th {
+    background: rgba(46, 184, 201, 0.18);
+    color: #ffffff;
+    font-weight: 700;
+}
+.who-table tbody tr:nth-child(even) {
+    background: rgba(16, 99, 138, 0.22);
+}
+.who-table tbody tr:nth-child(odd) {
+    background: rgba(6, 32, 50, 0.55);
+}
+.who-table td .badge {
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.who-card-list {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+}
+.who-card {
+    background: rgba(6, 32, 50, 0.82);
+    border: 1px solid rgba(46, 184, 201, 0.18);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+.who-card-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.who-card-row:last-child {
+    margin-bottom: 0;
+}
+.who-card-label {
+    color: #a9d7f0;
+    font-size: 12px;
+    font-weight: 700;
+    width: 40%;
+}
+.who-card-value {
+    color: #eef8fb;
+    font-size: 14px;
+    width: 55%;
+}
+
+@media only screen and (max-width: 760px) {
+    .who-table {
+        display: none;
+    }
+    .who-card-list {
+        display: block;
+    }
+    .who-card-row {
+        display: grid;
+        grid-template-columns: minmax(100px, 35%) minmax(0, 65%);
+        gap: 10px;
+        align-items: start;
+    }
+    .who-card-label {
+        width: auto;
+    }
+    .who-card-value {
+        width: auto;
+    }
+}
+
+/* ===== Streamlit native tables/dataframes ===== */
+.stTable, .stDataFrame,
+div[data-testid="stDataFrame"], div[data-testid="stDataFrame"] *,
+div[data-testid="stTable"], div[data-testid="stTable"] * {
+    background: rgba(6, 32, 50, 0.93) !important;
+    color: #e4f4f8 !important;
+}
+.stTable th, .stTable td,
+.stDataFrame th, .stDataFrame td,
+div[data-testid="stDataFrame"] table th,
+div[data-testid="stDataFrame"] table td,
+div[data-testid="stTable"] table th,
+div[data-testid="stTable"] table td {
+    padding: 10px 14px !important;
+    border-color: rgba(46, 184, 201, 0.16) !important;
+    color: #e4f4f8 !important;
+    background: rgba(6, 32, 50, 0.93) !important;
+}
+.stTable thead th,
+.stDataFrame thead th,
+div[data-testid="stDataFrame"] table thead th,
+div[data-testid="stTable"] table thead th {
+    background: rgba(46, 184, 201, 0.22) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+.stTable tbody tr:nth-child(even),
+.stDataFrame tbody tr:nth-child(even),
+div[data-testid="stDataFrame"] table tbody tr:nth-child(even),
+div[data-testid="stTable"] table tbody tr:nth-child(even) {
+    background: rgba(16, 99, 138, 0.22) !important;
+}
+.stTable tbody tr:nth-child(odd),
+.stDataFrame tbody tr:nth-child(odd),
+div[data-testid="stDataFrame"] table tbody tr:nth-child(odd),
+div[data-testid="stTable"] table tbody tr:nth-child(odd) {
+    background: rgba(6, 32, 50, 0.6) !important;
+}
+
+/* ===== Tabs ===== */
+.stTabs [data-baseweb="tab-list"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+}
+.stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+    display: none !important;
+}
+.stTabs [data-baseweb="tab-list"] button {
+    background: rgba(6, 32, 50, 0.88) !important;
+    border: 1px solid rgba(46, 184, 201, 0.20) !important;
+    border-radius: 10px !important;
+    color: #cfeaf2 !important;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    flex: 0 0 auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    line-height: 1.3 !important;
+    padding: 10px 14px !important;
+}
+.stTabs [data-baseweb="tab-list"] button:hover,
+.stTabs [data-baseweb="tab-list"] button:focus {
+    background: rgba(16, 99, 138, 0.45) !important;
+}
+.stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+    background: rgba(46, 184, 201, 0.22) !important;
+    border-color: #2eb8c9 !important;
+    color: #ffffff !important;
+}
+.stTabs [data-baseweb="tab-panel"] {
+    background: rgba(6, 32, 50, 0.78) !important;
+    border: 1px solid rgba(46, 184, 201, 0.16) !important;
+    border-radius: 14px !important;
+    padding: 18px !important;
+}
+
+/* ===== Alerts ===== */
+[data-testid="stAlert"] {
+    background: rgba(6, 32, 50, 0.92) !important;
+    border: 1px solid rgba(46, 184, 201, 0.22) !important;
+}
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span,
+[data-testid="stAlert"] div,
+.stAlert p, .stAlert span, .stAlert div {
+    color: #eef8fb !important;
+}
+
+/* ===== Responsive mobile layout ===== */
+@media only screen and (max-width: 900px) {
+    .block-container {
+        padding-top: 1.2rem;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+        max-width: none;
+    }
+
+    .hero {
+        padding: 30px 18px 24px 18px;
+    }
+    .hero-title {
+        font-size: 28px;
+    }
+    .hero-subtitle {
+        font-size: 15px;
+    }
+
+    .navbar {
+        padding: 14px 16px;
+    }
+
+    .stat-card,
+    .info-card,
+    .detail-card,
+    .result-card,
+    .widget-card,
+    .record-row {
+        padding: 16px !important;
+    }
+
+    .result-grid,
+    .result-grid.two-col {
+        grid-template-columns: 1fr !important;
+    }
+
+    .metric-box {
+        min-height: auto;
+    }
+
+    .stButton > button {
+        width: 100% !important;
+    }
+
+    .stSelectbox [role="button"],
+    .stNumberInput input,
+    .stTextInput input,
+    .stTextArea textarea,
+    select {
+        min-height: 50px !important;
+        padding: 10px 12px !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] button {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: 14px !important;
+    }
+
+    .who-table th,
+    .who-table td {
+        padding: 10px 12px !important;
+        font-size: 12px !important;
+    }
+
+    .record-main,
+    .result-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .record-sub,
+    .stat-label,
+    .result-date,
+    .widget-card p,
+    .widget-card li,
+    .detail-card ol {
+        font-size: 13px !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .hero {
+        padding: 24px 14px 20px 14px;
+    }
+    .hero-title {
+        font-size: 24px;
+    }
+    .hero-subtitle {
+        font-size: 14px;
+    }
+
+    .section-divider {
+        margin: 18px 0;
+    }
+
+    .stTabs [data-baseweb="tab-list"] button {
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+    }
+
+    .stButton > button {
+        font-size: 15px !important;
+    }
+
+    .result-card,
+    .info-card,
+    .detail-card,
+    .widget-card {
+        border-radius: 16px;
+    }
+
+    .block-container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+/* Prevent horizontal overflow on portrait phones */
+html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottomBlockContainer"] {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+}
+
+.block-container {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Ensure flex children shrink properly instead of forcing overflow */
+.record-main, .result-header, .stTabs [data-baseweb="tab-list"] button, .stAlert, .stTable, .stDataFrame {
+    min-width: 0 !important;
+}
+
+/* Make wide form widgets fit mobile width */
+.stSelectbox, .stNumberInput, .stTextInput, .stTextArea,
+.stFileUploader, .stRadio, .stCheckbox, .stSlider,
+.stMultiSelect, .stDateInput, .stTimeInput {
+    width: 100% !important;
+}
+
+button, input, textarea, select {
+    min-width: 0 !important;
+}
+
+img, svg, video, iframe, table {
+    max-width: 100% !important;
+}
+
+html, body, .stApp, .block-container, [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottomBlockContainer"] {
+    min-width: 0 !important;
+}
+
+/* Number inputs use Streamlit's custom +/- step buttons, not the browser's
+   native spinner, so the native one is hidden to avoid a duplicate/clashing
+   control sitting on top of our custom design. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+/* If any global rule hides outlines, ensure focus ring is still visible for accessibility */
+input:focus, select:focus, textarea:focus, button:focus {
+    outline: 3px solid rgba(46,184,201,0.18) !important;
+    outline-offset: 2px !important;
+}
