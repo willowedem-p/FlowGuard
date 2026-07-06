@@ -48,7 +48,7 @@ HISTORY_COLUMNS = [
 
 WHO_LIMITS = {
     "pH": (6.5, 8.5),
-    "TDS_ppm": (0z, 500),
+    "TDS_ppm": (0, 500),
     "Turbidity_NTU": (0, 5),
     "Temperature_C": (20, 30),
 }
