@@ -48,7 +48,7 @@ HISTORY_COLUMNS = [
 
 WHO_LIMITS = {
     "pH": (6.5, 8.5),
-    "TDS_ppm": (0, 500),
+    "TDS_ppm": (0z, 500),
     "Turbidity_NTU": (0, 5),
     "Temperature_C": (20, 30),
 }
@@ -670,6 +670,8 @@ if st.session_state.page == "record_detail" and st.session_state.selected_record
     st.session_state.page = "history"
     st.query_params["page"] = "history"
 
+# (history actions handled via Streamlit controls; no experimental query-param hacks)
+
 
 def go_to(page_name):
     st.session_state.page = page_name
@@ -722,12 +724,21 @@ def render_landing():
     st.markdown("""
     <div class="detail-card">
         <h3>About This Project</h3>
-        <p>Access to safe drinking water remains a major challenge in many communities.
-        Contaminated water contributes to diseases such as cholera, diarrhea, and typhoid,
-        and many communities still lack access to laboratory testing facilities — meaning
-        people often consume unsafe water unknowingly. FlowGuard was built to close
-        that gap with a low-cost, data-driven way to check whether water is safe to drink
-        and what to do about it if it isn't.</p>
+        <p>FlowGuard evaluates the physical and basic physicochemical quality of water using
+        <strong>pH</strong>, <strong>turbidity</strong>, <strong>TDS</strong>, and <strong>temperature</strong>.
+        The results provide an indication of water quality but do not replace comprehensive
+        laboratory testing required to confirm microbiological and chemical safety for drinking.</p>        
+        <h4>Typical sources this system can assess</h4>
+        <ul>
+            <li>Tap water</li>
+            <li>Borehole (ground) water</li>
+            <li>Well water</li>
+            <li>River or surface water</li>
+            <li>Rainwater</li>
+            <li>Reservoir or storage tank water</li>
+        </ul>
+        <p>This tool helps identify samples that may require further treatment or referral to laboratory testing. Use FlowGuard as a screening and monitoring aid — not a substitute for formal certification.</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -820,32 +831,26 @@ def render_landing():
 # ============================================================================
 
 def render_nav():
-    st.markdown(
-        "<div class='navbar'><span class='navbar-title'>🌊 FlowGuard</span></div>",
-        unsafe_allow_html=True,
-    )
-    nav1, nav2, nav3, nav4, nav5 = st.columns(5)
-    with nav1:
-        if st.button("🏠 Home", use_container_width=True, key="nav_home"):
-            go_to("dashboard_home")
-            st.rerun()
-    with nav2:
-        if st.button("🧪 New Test", use_container_width=True, key="nav_new_test"):
-            go_to("new_test")
-            st.rerun()
-    with nav3:
-        if st.button("📋 Previous Tests", use_container_width=True, key="nav_history"):
-            go_to("history")
-            st.rerun()
-    with nav4:
-        if st.button("💊 Recommendations", use_container_width=True, key="nav_recommendations"):
-            go_to("recommendations")
-            st.rerun()
-    with nav5:
-        if st.button("ℹ️ Info Page", use_container_width=True, key="nav_info"):
-            go_to("landing")
-            st.rerun()
-    st.markdown("<div class='section-divider'></div>", unsafe_allow_html=True)
+    # Title at left, navigation buttons at right. Use Streamlit buttons so
+    # navigation updates session state reliably across Streamlit versions.
+    left, *buttons = st.columns([2, 1, 1, 1, 1])
+    with left:
+        st.markdown("<div class='navbar'><span class='navbar-title'>🌊 FlowGuard</span></div>", unsafe_allow_html=True)
+
+    # Map label -> page_name
+    nav_map = [
+        ("Home", "landing", "nav_home"),
+        ("Dashboard", "dashboard_home", "nav_dashboard"),
+        ("New Test", "new_test", "nav_newtest"),
+        ("Previous Tests", "history", "nav_history"),
+        ("Recommendations", "recommendations", "nav_recs"),
+    ]
+
+    for col, (label, page, key) in zip(buttons, nav_map):
+        with col:
+            if st.button(label, key=key, use_container_width=True):
+                go_to(page)
+                st.experimental_rerun()
 
 
 # ============================================================================
@@ -887,6 +892,7 @@ def render_dashboard_home():
                 <div class="record-sub">pH {row['pH']} · TDS {row['TDS_ppm']} ppm · Turbidity {row['Turbidity_NTU']} NTU · {row['Temperature_C']}°C</div>
             </div>
             """, unsafe_allow_html=True)
+        st.markdown("<p style='font-size:13px;color:#9fc9d9;margin-top:12px;'>Note: This dashboard shows indicators based on pH, TDS, turbidity, and temperature. These indicators are screening-level and do not replace laboratory testing for drinking-water safety.</p>", unsafe_allow_html=True)
 
 
 # ============================================================================
@@ -897,22 +903,74 @@ def render_new_test():
     st.markdown("<h3>Run a New Water Quality Test</h3>", unsafe_allow_html=True)
     st.markdown("<p>Enter sensor readings below to assess water safety.</p>", unsafe_allow_html=True)
 
+    # ensure session state keys exist so +/- buttons can modify them
+    if "ph_input" not in st.session_state:
+        st.session_state["ph_input"] = 7.0
+    if "tds_input" not in st.session_state:
+        st.session_state["tds_input"] = 150.0
+    if "turbidity_input" not in st.session_state:
+        st.session_state["turbidity_input"] = 1.0
+    if "temp_input" not in st.session_state:
+        st.session_state["temp_input"] = 25.0
+
+    # Compact, responsive input layout: four inputs in a single row on wide screens,
+    # stacking naturally on mobile. Wrapped in a styled card for visual separation.
     with st.form("test_form"):
         col1, col2 = st.columns(2)
         with col1:
-            ph = st.number_input("pH", min_value=0.0, max_value=14.0, value=7.0, step=0.01, format="%.2f")
-            tds = st.number_input("TDS (ppm)", min_value=0.0, max_value=5000.0, value=150.0, step=0.1, format="%.1f")
+            ph_col, ph_btn_col = st.columns([9, 1])
+            with ph_col:
+                ph = st.number_input("pH", min_value=0.0, max_value=14.0, value=st.session_state["ph_input"], step=0.01, format="%.2f", key="ph_input")
+            with ph_btn_col:
+                if st.button("+", key="ph_plus"):
+                    st.session_state["ph_input"] = round(min(st.session_state["ph_input"] + 0.01, 14.0), 2)
+                    st.experimental_rerun()
+                if st.button("-", key="ph_minus"):
+                    st.session_state["ph_input"] = round(max(st.session_state["ph_input"] - 0.01, 0.0), 2)
+                    st.experimental_rerun()
+
+            tds_col, tds_btn_col = st.columns([9, 1])
+            with tds_col:
+                tds = st.number_input("TDS (ppm)", min_value=0.0, max_value=5000.0, value=st.session_state["tds_input"], step=0.1, format="%.1f", key="tds_input")
+            with tds_btn_col:
+                if st.button("+", key="tds_plus"):
+                    st.session_state["tds_input"] = round(min(st.session_state["tds_input"] + 0.1, 5000.0), 1)
+                    st.experimental_rerun()
+                if st.button("-", key="tds_minus"):
+                    st.session_state["tds_input"] = round(max(st.session_state["tds_input"] - 0.1, 0.0), 1)
+                    st.experimental_rerun()
+
         with col2:
-            turbidity = st.number_input(
-                "Turbidity (NTU)",
-                min_value=0.0,
-                max_value=200.0,
-                value=1.0,
-                step=0.01,
-                format="%.2f",
-                help="Raw turbidity reading from sensor. WHO limit: 5 NTU. Enter 0 for perfectly clear water.",
-            )
-            temperature = st.number_input("Temperature (°C)", min_value=-10.0, max_value=60.0, value=25.0, step=0.01, format="%.2f")
+            turb_col, turb_btn_col = st.columns([9, 1])
+            with turb_col:
+                turbidity = st.number_input(
+                    "Turbidity (NTU)",
+                    min_value=0.0,
+                    max_value=200.0,
+                    value=st.session_state["turbidity_input"],
+                    step=0.01,
+                    format="%.2f",
+                    help="Raw turbidity reading from sensor. WHO limit: 5 NTU. Enter 0 for perfectly clear water.",
+                    key="turbidity_input",
+                )
+            with turb_btn_col:
+                if st.button("+", key="turb_plus"):
+                    st.session_state["turbidity_input"] = round(min(st.session_state["turbidity_input"] + 0.01, 200.0), 2)
+                    st.experimental_rerun()
+                if st.button("-", key="turb_minus"):
+                    st.session_state["turbidity_input"] = round(max(st.session_state["turbidity_input"] - 0.01, 0.0), 2)
+                    st.experimental_rerun()
+
+            temp_col, temp_btn_col = st.columns([9, 1])
+            with temp_col:
+                temperature = st.number_input("Temperature (°C)", min_value=-10.0, max_value=60.0, value=st.session_state["temp_input"], step=0.01, format="%.2f", key="temp_input")
+            with temp_btn_col:
+                if st.button("+", key="temp_plus"):
+                    st.session_state["temp_input"] = round(min(st.session_state["temp_input"] + 0.01, 60.0), 2)
+                    st.experimental_rerun()
+                if st.button("-", key="temp_minus"):
+                    st.session_state["temp_input"] = round(max(st.session_state["temp_input"] - 0.01, -10.0), 2)
+                    st.experimental_rerun()
 
         submitted = st.form_submit_button("Run Assessment", use_container_width=True)
 
@@ -1036,6 +1094,13 @@ def render_result_block(dt_str, ph, tds, turbidity, temperature,
     st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
     st.markdown("<p style='font-weight:bold;'>Assessment confidence:</p>", unsafe_allow_html=True)
     st.progress(min(int(confidence * 100), 100))
+    st.markdown(
+        "<p class='report-disclaimer' style='font-size:12px;color:#9fc9d9;margin-top:10px;'>"
+        "This assessment evaluates basic physicochemical parameters (pH, TDS, turbidity, temperature) "
+        "and provides an indication of water quality; it does not replace comprehensive laboratory testing "
+        "for microbiological or chemical safety.</p>",
+        unsafe_allow_html=True,
+    )
     render_print_button(dt_str, ph, tds, turbidity, temperature, ml_prob, purity,
                          classification, final_decision, confidence, treatment)
 
@@ -1142,6 +1207,8 @@ def render_print_button(dt_str, ph, tds, turbidity, temperature, ml_prob, purity
             <p>{summary_text}</p>
         </div>
 
+        <p style="font-size:13px;color:#516c81;margin-top:12px;">This assessment evaluates basic physicochemical parameters (pH, TDS, turbidity, temperature) and provides an indication of water quality; it does not replace comprehensive laboratory testing for microbiological or chemical safety.</p>
+
         <div class="readings-analysis-grid">
             <div class="card">
                 <h2>Readings</h2>
@@ -1203,7 +1270,7 @@ def render_print_button(dt_str, ph, tds, turbidity, temperature, ml_prob, purity
     render_print_window_button("🖨️ Open Printable Report", f"print_btn_{dt_str}", print_html)
 
 
-def render_print_window_button(label: str, unique_key: str, html_content: str):
+def render_print_window_button(label: str, unique_key: str, html_content: str, width_full: bool = True):
     """Reusable 'open a printable report in a new tab' button.
 
     A JS popup (window.open + document.write) is used instead of a data: URI
@@ -1212,11 +1279,12 @@ def render_print_window_button(label: str, unique_key: str, html_content: str):
     """
     escaped_html = html_content.replace("\\", "\\\\").replace("`", "\\`").replace("</script>", "<\\/script>")
     safe_id = "print_btn_" + "".join(ch if ch.isalnum() else "_" for ch in unique_key)
+    btn_width = "100%" if width_full else "auto"
 
     components.html(f"""
         <button id="{safe_id}" style="
             background:linear-gradient(135deg, #10638a 0%, #2eb8c9 100%);color:white;border:1px solid rgba(46,184,201,0.35);padding:10px 18px;
-            min-height:44px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;line-height:1.2;box-shadow:0 10px 26px rgba(0,0,0,0.35);width:100%;">
+            min-height:44px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;line-height:1.2;box-shadow:0 10px 26px rgba(0,0,0,0.35);width:{btn_width};display:inline-block;">
             {label}
         </button>
         <script>
@@ -1276,6 +1344,7 @@ def build_history_print_html(df: pd.DataFrame) -> str:
     <body><div class="container">
         <h1 class="heading">💧 FlowGuard — Test History Report</h1>
         <p class="subheading">Full record of {len(df)} water quality test(s) run in this app.</p>
+        <p style="font-size:13px;color:#516c81;margin-top:8px;">This report is based on basic physicochemical readings (pH, TDS, turbidity, temperature) and provides screening-level information; it does not replace laboratory testing for microbiological or chemical safety.</p>
         <table>
             <tr><th>Date/Time</th><th>pH</th><th>TDS (ppm)</th><th>Turbidity (NTU)</th>
                 <th>Temp (°C)</th><th>WQI Class</th><th>Purity</th><th>Final Decision</th></tr>
@@ -1315,6 +1384,7 @@ def build_recommendations_print_html(df: pd.DataFrame) -> str:
     <body><div class="container">
         <h1 class="heading">💊 FlowGuard — Treatment Recommendations Report</h1>
         <p class="subheading">Recommended treatment plans for all {len(df)} test(s) on record.</p>
+        <p style="font-size:13px;color:#516c81;margin-top:8px;">These recommendations are generated from basic physicochemical indicators (pH, TDS, turbidity, temperature) and are intended as guidance; lab confirmation may be required for definitive action.</p>
         {records_html}
         <div class="report-actions">
             <button class="print-button" onclick="window.print();">Print this report</button>
@@ -1412,18 +1482,31 @@ def render_history():
                 st.rerun()
             st.markdown("<div class='section-divider thin'></div>", unsafe_allow_html=True)
 
-    st.markdown("<div class='section-divider'></div>", unsafe_allow_html=True)
-    dl_col, print_col = st.columns(2)
-    with dl_col:
-        csv_bytes = df.to_csv(index=False).encode("utf-8")
-        st.download_button("⬇️ Download Full History (CSV)", data=csv_bytes,
-                            file_name="water_quality_history.csv", mime="text/csv",
-                            use_container_width=True)
-    with print_col:
-        render_print_window_button(
-            "🖨️ Print Test History", "history_report",
-            build_history_print_html(df),
+        st.markdown("<div class='section-divider'></div>", unsafe_allow_html=True)
+
+    # Build CSV with disclaimer header and printable HTML, then show both controls
+    disclaimer_header = (
+        "# FlowGuard — Screening-level water quality data\n"
+        "# This CSV contains basic physicochemical readings (pH, TDS, turbidity, temperature).\n"
+        "# These values provide screening-level indicators and do not replace comprehensive laboratory testing for microbiological or chemical safety.\n"
+        "# Generated by FlowGuard\n\n"
+    )
+    csv_content = disclaimer_header + df.to_csv(index=False)
+    csv_bytes = csv_content.encode("utf-8")
+
+    print_html = build_history_print_html(df)
+
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.download_button(
+            label="⬇️ Download Full History (CSV)",
+            data=csv_bytes,
+            file_name="water_quality_history_with_disclaimer.csv",
+            mime="text/csv",
+            key="download_history",
         )
+    with col2:
+        render_print_window_button("🖨️ Print Test History", "print_history", print_html)
 
 
 # ============================================================================
@@ -1514,7 +1597,7 @@ else:
         render_new_test()
     elif st.session_state.page == "result":
         render_result_page()
-    elif st.session_state.page == "history":
+    elif st.sess4cldddddddddddddddddddddddddddddddddddddddddddddddddddddcion_state.page == "history":
         render_history()
     elif st.session_state.page == "record_detail":
         render_record_detail()
