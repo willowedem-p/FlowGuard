@@ -251,10 +251,10 @@ section[data-testid="stSidebar"] span {
 .stTextInput input,
 .stTextArea textarea,
 select {
-    background: transparent !important;
+    background: rgba(224, 242, 255, 0.92) !important;
     border: none !important;
     border-radius: 0 !important;
-    color: #eef8fb !important;
+    color: #0f2f44 !important;
     min-height: 40px !important;
     height: 40px !important;
     padding: 4px 0 !important;
